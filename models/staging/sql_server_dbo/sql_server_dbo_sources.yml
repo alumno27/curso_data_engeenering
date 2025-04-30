@@ -1,0 +1,92 @@
+    name: sql_server_dbo # name of the source
+    schema: SQL_SERVER_DBO # this is the schema our raw data lives in
+    database: ALUMNO27_DEV_BRONZE_DB # this is the name of our database
+
+    quoting:
+      database: false
+      schema: false
+      identifier: false
+
+    freshness:
+      warn_after: {count: 24, period: hour}
+      error_after: {count: 1000, period: day}
+
+    tables:
+
+      - name: addreses
+        loaded_at_field: _fivetran_synced
+        columns:
+          - name: address_id
+          - name: zipcode
+          - name: country
+          - name: address
+          - name: state
+          - name: _fivetran_deleted
+          - name: _fivetran_synced
+
+
+           name: events
+        loaded_at_field: _fivetran_synced
+        columns:
+          - name: event_id
+          - name: page_url
+          - name: event_type
+          - name: user_id
+          - name: products_id
+          - name: session_id
+          - name: created_at
+          - name: order_id
+          - name: _fivetran_deleted
+          - name: _fivetran_synced
+          
+           
+        name: orders
+        loaded_at_field: _fivetran_synced
+        columns:
+          - name: order_id
+          - name: shipping_service
+          - name: shipping cost 
+          - name: address_id
+          - name: created_at
+          - name: 
+          - name: 
+          - name: 
+
+
+           name: order_items
+        loaded_at_field: _fivetran_synced
+        columns:
+          - name: 
+          - name: 
+          - name: 
+          - name: 
+          - name: 
+
+
+           name: products
+        loaded_at_field: _fivetran_synced
+        columns:
+          - name: 
+          - name: 
+          - name: 
+          - name: 
+
+
+           name: promos
+        loaded_at_field: _fivetran_synced
+        columns:
+          - name: _row
+          - name: product_id
+          - name: quantity
+          - name: month
+          - name: _fivetran_synced
+
+
+           name: users
+        loaded_at_field: _fivetran_synced
+        columns:
+          - name: _row
+          - name: product_id
+          - name: quantity
+          - name: month
+          - name: _fivetran_synced
