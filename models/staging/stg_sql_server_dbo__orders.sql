@@ -6,7 +6,7 @@ select
     user_id,
     promo_id,
     address_id,
-    shipping_service,
+    {{ dbt_utils.generate_surrogate_key(['shipping_service']) }} as shipping_service_sk,
     shipping_cost,
     order_cost,
     order_total,
