@@ -1,9 +1,9 @@
 version: 2 
 sources: 
 
-  - name: google_sheets # name of the source
-    schema: google_sheets # this is the schema our raw data lives in
-    database: ALUMNO27_DEV_BRONZE_DB # this is the name of our database
+  - name: google_sheets
+    schema: google_sheets
+    database: ALUMNO27_DEV_BRONZE_DB
 
     quoting:
       database: false
@@ -17,9 +17,15 @@ sources:
     tables:
       - name: budget
         loaded_at_field: _fivetran_synced
+        description: objetivo de ventas de cada mes
         columns:
           - name: _row
+            description: Identificador interno de la fila (único por registro, usado para control).
           - name: product_id
+            description: Identificador del producto al que se le asigna el objetivo de ventas.
           - name: quantity
+            description: Cantidad objetivo de unidades que se espera vender del producto en el mes.
           - name: month
+            description: Mes en el que se espera cumplir con el objetivo de ventas (formato YYYY-MM).
           - name: _fivetran_synced
+            description: Fecha y hora en que el registro fue sincronizado por Fivetran.

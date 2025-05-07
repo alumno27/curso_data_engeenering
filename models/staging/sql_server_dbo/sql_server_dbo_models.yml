@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: base_sql_server_dbo__events
+    description: "Modelo base que filtra eventos inválidos y asegura tipos consistentes"
+
+  - name: base_sql_server_dbo__promos
+    description: "Modelo base con promo dummy para evitar nulos"
+
+  - name: stg_sql_server_dbo__events
+    description: "Modelo staging que estandariza eventos y convierte fechas a UTC"
+    columns:
+      - name: event_id_sk
+        description: "Clave surrogate generada para el evento"
+        tests:
+          - not_null
+      - name: created_at_utc
+        description: "Fecha del evento convertida a UTC"
+
+  - name: stg_sql_server_dbo__orders
+    description: "Modelo staging que transforma y estandariza pedidos"
+    columns:
+      - name: order_id_sk
+        description: "Clave surrogate generada para el pedido"
+        tests:
+          - not_null
+      - name: user_id
+        description: "ID del usuario que realizó el pedido"
+      - name: promo_id
+        description: "ID de la promoción aplicada al pedido"
+      - name: created_at_utc
+        description: "Fecha de creación del pedido convertida a UTC"
+      - name: delivered_at_utc
+        description: "Fecha de entrega convertida a UTC"
+      - name: status
+        description: "Estado actual del pedido"

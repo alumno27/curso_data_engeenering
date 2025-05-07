@@ -1,115 +1,165 @@
 version: 2
-
 sources:
-
-  - name: sql_server_dbo # name of the source 
-    schema: sql_server_dbo # this is the schema our raw data lives in
-    database: ALUMNO27_DEV_BRONZE_DB # this is the name of our database
-
-    quoting:
-      database: false
-      schema: false
-      identifier: false
-
-    freshness:
-      warn_after: {count: 24, period: hour}
-      error_after: {count: 1000, period: day}
-
-    tables:
-
-      - name: addresses
-        loaded_at_field: _fivetran_synced
-        columns:
-          - name: address_id
-          - name: zipcode
-          - name: country
-          - name: address
-          - name: state
-          - name: _fivetran_deleted
-          - name: _fivetran_synced
-
-      - name: events
-        loaded_at_field: _fivetran_synced
-        columns:
-          - name: event_id
-          - name: page_url
-          - name: event_type
-          - name: user_id
-          - name: product_id
-          - name: session_id
-          - name: created_at
-          - name: order_id
-          - name: _fivetran_deleted
-          - name: _fivetran_synced
-      
-      - name: orders
-        loaded_at_field: _fivetran_synced
-        columns:
-        - name: shipping_service
-        - name: shipping_cost
-        - name: address_id
-        - name: created_at
-        - name: promo_id
-        - name: estimated_delivery_at
-        - name: order_cost
-        - name: user_id
-        - name: order_total
-        - name: delivered_at
-        - name: tracking_id
-        - name: status
-        - name: _fivetran_deleted
-        - name: _fivetran_synced
-      
-      - name: order_item
-        loaded_at_field: _fivetran_synced
-        columns:
-        - name: order_id
-        - name: product_id
-        - name: quantity
-        - name: _fivetran_deleted
-        - name: _fivetran_synced  
-
-      - name: products
-        loaded_at_field: _fivetran_synced
-        columns: 
-          - name: product_id
-          - name: price
-          - name: name
-          - name: inventory
-          - name: _fivetran_deleted
-          - name: _fivetran_synced  
-
-      - name: promos
-        loaded_at_field: _fivetran_synced
-        description: >  
-         promociones que se aplican 
-        
-        columns: 
-          - name: promo_id 
-            tests:
-              - not_null
-              - unique
-          - name: discount
-          - name: status
-          - name: _fivetran_deleted   
-          - name: _fivetran_synced
-
-          
-      
-          
-      
-      - name: users
-        loaded_at_field: _fivetran_synced
-        columns:
-          - name: user_id
-          - name: update_at
-          - name: address_id
-          - name: last_name
-          - name: created_at
-          - name: phone_number
-          - name: total_orders
-          - name: first_name
-          - name: email
-          - name: _fivetran_deleted   
-          - name: _fivetran_synced
+- name: sql_server_dbo
+  schema: sql_server_dbo
+  database: ALUMNO27_DEV_BRONZE_DB
+  quoting:
+    database: false
+    schema: false
+    identifier: false
+  freshness:
+    warn_after:
+      count: 24
+      period: hour
+    error_after:
+      count: 1000
+      period: day
+  tables:
+  - name: addresses
+    loaded_at_field: _fivetran_synced
+    description: Direcciones asociadas a usuarios y pedidos
+    columns:
+    - name: address_id
+      description: ID de la dirección.
+    - name: zipcode
+      description: Código postal.
+    - name: country
+      description: País.
+    - name: address
+      description: Texto completo de la dirección.
+    - name: state
+      description: Estado o región.
+    - name: _fivetran_deleted
+      description: Indica si fue eliminado.
+    - name: _fivetran_synced
+      description: Fecha de sincronización con Fivetran.
+  - name: events
+    loaded_at_field: _fivetran_synced
+    description: Eventos de usuario en la plataforma
+    columns:
+    - name: event_id
+      description: ID del evento.
+    - name: page_url
+      description: URL donde ocurrió el evento.
+    - name: event_type
+      description: Tipo de evento (click, view...).
+    - name: user_id
+      description: ID del usuario relacionado.
+    - name: product_id
+      description: ID del producto.
+    - name: session_id
+      description: ID de la sesión del usuario.
+    - name: created_at
+      description: Fecha de creación del usuario.
+    - name: order_id
+      description: ID del pedido relacionado.
+    - name: _fivetran_deleted
+      description: Indica si fue eliminado.
+    - name: _fivetran_synced
+      description: Fecha de sincronización con Fivetran.
+  - name: orders
+    loaded_at_field: _fivetran_synced
+    description: Pedidos realizados por los usuarios
+    columns:
+    - name: shipping_service
+      description: Nombre del servicio de envío.
+    - name: shipping_cost
+      description: Costo del envío.
+    - name: address_id
+      description: ID de la dirección.
+    - name: created_at
+      description: Fecha de creación del usuario.
+    - name: promo_id
+      description: ID de la promoción aplicada.
+    - name: estimated_delivery_at
+      description: Fecha estimada de entrega.
+    - name: order_cost
+      description: Costo del pedido sin envío.
+    - name: user_id
+      description: ID del usuario relacionado.
+    - name: order_total
+      description: Costo total del pedido.
+    - name: delivered_at
+      description: Fecha real de entrega.
+    - name: tracking_id
+      description: ID de seguimiento del envío.
+    - name: status
+      description: Estado de la promoción (activo/inactivo).
+    - name: _fivetran_deleted
+      description: Indica si fue eliminado.
+    - name: _fivetran_synced
+      description: Fecha de sincronización con Fivetran.
+  - name: order_item
+    loaded_at_field: _fivetran_synced
+    description: Ítems que componen cada pedido
+    columns:
+    - name: order_id
+      description: ID del pedido relacionado.
+    - name: product_id
+      description: ID del producto.
+    - name: quantity
+      description: Cantidad de productos.
+    - name: _fivetran_deleted
+      description: Indica si fue eliminado.
+    - name: _fivetran_synced
+      description: Fecha de sincronización con Fivetran.
+  - name: products
+    loaded_at_field: _fivetran_synced
+    description: Catálogo de productos
+    columns:
+    - name: product_id
+      description: ID del producto.
+    - name: price
+      description: Precio unitario.
+    - name: name
+      description: Nombre del producto.
+    - name: inventory
+      description: Unidades disponibles en inventario.
+    - name: _fivetran_deleted
+      description: Indica si fue eliminado.
+    - name: _fivetran_synced
+      description: Fecha de sincronización con Fivetran.
+  - name: promos
+    loaded_at_field: _fivetran_synced
+    description: Promociones aplicables a pedidos
+    columns:
+    - name: promo_id
+      description: ID de la promoción aplicada.
+      tests:
+      - not_null
+      - unique
+    - name: discount
+      description: Descuento aplicado.
+    - name: status
+      description: Estado de la promoción (activo/inactivo).
+    - name: _fivetran_deleted
+      description: Indica si fue eliminado.
+    - name: _fivetran_synced
+      description: Fecha de sincronización con Fivetran.
+  - name: users
+    loaded_at_field: _fivetran_synced
+    description: Información de los usuarios registrados
+    columns:
+    - name: user_id
+      description: ID del usuario relacionado.
+    - name: update_at
+      description: Fecha de última actualización.
+    - name: address_id
+      description: ID de la dirección.
+    - name: last_name
+      description: Apellido del usuario.
+    - name: created_at
+      description: Fecha de creación del usuario.
+    - name: phone_number
+      description: Teléfono de contacto.
+    - name: total_orders
+      description: Cantidad total de pedidos.
+    - name: first_name
+      description: Nombre del usuario.
+    - name: email
+      description: Correo electrónico del usuario.
+    - name: _fivetran_deleted
+      description: Indica si fue eliminado.
+    - name: _fivetran_synced
+      description: Fecha de sincronización con Fivetran.
 
