@@ -14,23 +14,65 @@ models:
         description: "Clave surrogate generada para el evento"
         tests:
           - not_null
-      - name: created_at_utc
-        description: "Fecha del evento convertida a UTC"
-
-  - name: stg_sql_server_dbo__orders
-    description: "Modelo staging que transforma y estandariza pedidos"
-    columns:
-      - name: order_id_sk
-        description: "Clave surrogate generada para el pedido"
+          - unique
+      - name: event_id_nk
+        description: "ID natural del evento desde el sistema fuente"
+      - name: user_id_nk
+        description: "ID del usuario que generó el evento"
+      - name: product_id_nk
+        description: "ID del producto relacionado al evento (si aplica)"
+      - name: order_id_nk
+        description: "ID del pedido relacionado al evento (si aplica)"
+      - name: session_id
+        description: "ID de sesión del usuario"
+      - name: page_url
+        description: "URL de la página en la que ocurrió el evento"
+      - name: event_type
+        description: "Tipo de evento registrado"
         tests:
           - not_null
-      - name: user_id
-        description: "ID del usuario que realizó el pedido"
-      - name: promo_id
-        description: "ID de la promoción aplicada al pedido"
+      - name: created_at_utc
+        description: "Fecha del evento convertida a UTC"
+      - name: synced_at_utc
+        description: "Fecha de sincronización convertida a UTC"
+      - name: _fivetran_deleted
+        description: "Marca de eliminación lógica desde el origen"
+
+  - name: stg_sql_server_dbo__orders
+    description: "Modelo staging que transforma y estandariza los pedidos para análisis"
+    columns:
+      - name: order_id_sk
+        description: "Clave surrogate generada para el pedido, usada en joins"
+        tests:
+          - not_null
+          - unique
+      - name: order_id_nk
+        description: "ID natural del pedido desde el sistema fuente"
+      - name: user_id_nk
+        description: "ID natural del usuario que hizo el pedido"
+      - name: promo_id_nk
+        description: "ID natural de la promoción aplicada al pedido"
+      - name: address_id_nk
+        description: "ID natural de la dirección asociada al pedido"
+      - name: shipping_service_sk
+        description: "Clave surrogate del servicio de envío, normalizada"
+      - name: shipping_cost
+        description: "Coste del envío"
+      - name: order_subtotal
+        description: "Subtotal del pedido sin incluir envío"
+      - name: order_total
+        description: "Total del pedido incluyendo envío"
+      - name: tracking_id
+        description: "Código de seguimiento del pedido"
+      - name: order_status
+        description: "Estado actual del pedido"
       - name: created_at_utc
         description: "Fecha de creación del pedido convertida a UTC"
+      - name: estimated_delivery_utc
+        description: "Fecha estimada de entrega convertida a UTC"
       - name: delivered_at_utc
-        description: "Fecha de entrega convertida a UTC"
-      - name: status
-        description: "Estado actual del pedido"
+        description: "Fecha real de entrega convertida a UTC"
+      - name: synced_at_utc
+        description: "Fecha en que el registro fue sincronizado (UTC)"
+      - name: _fivetran_deleted
+        description: "Indica si el registro fue eliminado en el origen"
