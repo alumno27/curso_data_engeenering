@@ -8,3 +8,6 @@ select
     status,
     convert_timezone('UTC', date_load) as date_load_utc
 from {{ ref('base_sql_server_dbo__promos') }}
+
+
+
