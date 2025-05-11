@@ -76,3 +76,5 @@ models:
         description: "Fecha en que el registro fue sincronizado (UTC)"
       - name: _fivetran_deleted
         description: "Indica si el registro fue eliminado en el origen"
+
+
