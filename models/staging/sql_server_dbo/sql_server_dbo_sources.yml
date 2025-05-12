@@ -89,7 +89,7 @@ sources:
       description: Indica si fue eliminado.
     - name: _fivetran_synced
       description: Fecha de sincronización con Fivetran.
-  - name: order_item
+  - name: order_items
     loaded_at_field: _fivetran_synced
     description: Ítems que componen cada pedido
     columns:
