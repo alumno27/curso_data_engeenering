@@ -34,7 +34,7 @@ models:
   - name: base_sql_server_dbo__promos
     description: "Modelo base con promo dummy para evitar nulos"
     columns:
-      - name: promo_id_nk
+      - name: promo_id
         description: "ID natural de la promoción"
         tests:
           - not_null

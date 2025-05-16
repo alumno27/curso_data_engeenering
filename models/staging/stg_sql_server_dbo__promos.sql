@@ -14,30 +14,30 @@ with base as (
 cleaned as (
   select
     -- surrogate key para promo
-    {{ dbt_utils.generate_surrogate_key(['promo_id_nk']) }}    as promo_id_sk,
+    {{ dbt_utils.generate_surrogate_key(['promo_id']) }} as promo_id_sk,
+
 
     -- llave natural
-    promo_id_nk,
+    promo_id,
 
     -- descripción (normalizada)
-    lower(promo_name_raw)          as promo_description,
+    lower(promo_name_raw) as promo_description,
 
     -- descuento en formato numérico
-    coalesce(discount_raw, 0)      as discount,
+    coalesce(discount_raw, 0) as discount,
 
     -- fechas de vigencia
-    start_date_raw                 as start_date,
-    end_date_raw                   as end_date,
+    start_date_raw as start_date,
+    end_date_raw   as end_date,
 
     -- sync timestamp en UTC
-    convert_timezone('UTC', synced_at_raw)::timestamp_tz   as synced_at_utc,
+    convert_timezone('UTC', synced_at_raw)::timestamp_tz as synced_at_utc,
 
     -- flag de borrado
     _fivetran_deleted
+
   from base
   where coalesce(_fivetran_deleted, false) = false
 )
 
 select * from cleaned
-
-

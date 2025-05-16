@@ -5,25 +5,31 @@ config-version: 2
 profile: 'default'
 
 model-paths: ["models"]
+seed-paths:  ["seeds"]         # ← aquí
 target-path: "target"
 clean-targets:
   - "target"
   - "dbt_packages"
 
+seeds:
+  my_new_project:
+    zipcode_enriquecido:       # ← coincide con seeds/zipcode_enriquecido.csv
+      header: true
+      delimiter: ','
+      quote: '"'
+      trim_quotes: true
+
 models:
-  # todo lo que esté en models/sql_server_dbo/...
   sql_server_dbo:
     +materialized: view
     +database: "{{ env_var('DBT_ENVIRONMENTS') }}_SILVER_DB"
     +schema: sql_server_dbo
 
-  # y lo mismo para google_sheets
   google_sheets:
     +materialized: view
     +database: "{{ env_var('DBT_ENVIRONMENTS') }}_SILVER_DB"
     +schema: google_sheets
 
-  # tus marts/core sigue igual
   marts:
     core:
       +materialized: table
