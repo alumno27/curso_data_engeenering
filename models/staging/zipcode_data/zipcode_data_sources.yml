@@ -2,7 +2,24 @@ version: 2
 
 sources:
   - name: zipcode_source
-    schema: public
-    database: ALUMNO27_DEV_SILVER_DB
+    database: ALUMNO27_DEV_BRONZE_DB
+    schema: ZIPCODE_DATA
+    quoting:
+      database: false
+      schema: false
+      identifier: false
     tables:
-      - name: zipcode_data
+      - name: cities
+        description: Datos de ciudades y códigos postales cargados desde CSV
+        columns:
+          - name: zipcode
+            description: Código postal
+          - name: city
+            description: Nombre de la ciudad
+          - name: population
+            description: Población estimada
+          - name: density
+            description: Densidad poblacional
+
+
+

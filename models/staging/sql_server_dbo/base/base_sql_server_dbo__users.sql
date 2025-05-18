@@ -4,12 +4,13 @@
 ) }}
 
 select
-  user_id          as user_id_nk,
-  first_name       as first_name_raw,
-  last_name        as last_name_raw,
-  email            as email_raw,
-  phone_number     as phone_number_raw,
-  total_orders     as total_orders_raw,
+  "USER_ID"          as user_id,
+  "FIRST_NAME"       as first_name,
+  "LAST_NAME"        as last_name,
+  "EMAIL"            as email,
+  "PHONE_NUMBER"     as phone_number,
+  "TOTAL_ORDERS"     as total_orders,
   _fivetran_deleted,
-  _fivetran_synced as synced_at_raw
+  _fivetran_synced   as synced_at
 from {{ source('sql_server_dbo','users') }}
+

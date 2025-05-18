@@ -1,12 +1,12 @@
 {{ config(
     materialized = 'view',
-    tags         = ['base']
+    
 ) }}
 
 select
-  order_id       as order_id_nk,
-  product_id     as product_id_nk,
-  quantity       as quantity_raw,
+  order_id       as order_id,
+  product_id     as product_id,
+  quantity       as quantity,
   _fivetran_deleted,
-  _fivetran_synced as synced_at_raw
+  _fivetran_synced as synced_at
 from {{ source('sql_server_dbo','order_items') }}

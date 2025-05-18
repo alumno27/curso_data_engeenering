@@ -1,0 +1,40 @@
+models:
+  - name: dim_city
+    description: "Dimensión de códigos postales enriquecida con ciudad, población y densidad"
+    columns:
+      - name: zipcode_sk
+        description: "Clave surrogate generada para el código postal"
+        tests: [not_null, unique]
+      - name: zipcode
+        description: "Código postal"
+      - name: city
+        description: "Ciudad asociada"
+      - name: population
+        description: "Población estimada"
+      - name: density
+        description: "Densidad de población (personas por km²)"
+
+  - name: dim_time
+    description: "Tabla de fechas con atributos enriquecidos para análisis temporal"
+    columns:
+      - name: date
+        description: "Fecha"
+        tests:
+          - unique
+          - not_null
+      - name: year
+        description: "Año"
+      - name: month
+        description: "Mes numérico"
+      - name: day
+        description: "Día del mes"
+      - name: quarter
+        description: "Trimestre del año"
+      - name: week
+        description: "Semana del año"
+      - name: day_name
+        description: "Nombre del día"
+      - name: month_name
+        description: "Nombre del mes"
+      - name: is_weekend
+        description: "Marca si es fin de semana"

@@ -5,33 +5,33 @@ config-version: 2
 profile: 'default'
 
 model-paths: ["models"]
-seed-paths:  ["seeds"]         # ← aquí
+seed-paths: ["seeds"]
 target-path: "target"
 clean-targets:
   - "target"
   - "dbt_packages"
 
-seeds:
-  my_new_project:
-    zipcode_enriquecido:       # ← coincide con seeds/zipcode_enriquecido.csv
-      header: true
-      delimiter: ','
-      quote: '"'
-      trim_quotes: true
-
 models:
-  sql_server_dbo:
-    +materialized: view
-    +database: "{{ env_var('DBT_ENVIRONMENTS') }}_SILVER_DB"
-    +schema: sql_server_dbo
-
-  google_sheets:
-    +materialized: view
-    +database: "{{ env_var('DBT_ENVIRONMENTS') }}_SILVER_DB"
-    +schema: google_sheets
-
-  marts:
-    core:
+  +transient: false
+  my_new_project:
+    staging:
+      +materialized: view
+      +database: "{{ env_var('DBT_ENVIRONMENTS') }}_SILVER_DB"
+      google_sheets:
+        +schema: google_sheets
+      sql_server_dbo:
+        +schema: sql_server_dbo
+      data:
+        +schema: data
+    marts:
       +materialized: table
       +database: "{{ env_var('DBT_ENVIRONMENTS') }}_GOLD_DB"
-      +schema: core
+      core:
+        +schema: core
+seeds:
+  +schema: seed_data
+  +database: "{{ env_var('DBT_ENVIRONMENTS') }}_BRONZE_DB"        
+snapshots:
+  +transient: false
+  +target_database: "{{ env_var('DBT_ENVIRONMENTS') }}_SILVER_DB"
+  +target_schema: snapshots

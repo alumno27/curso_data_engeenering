@@ -1,28 +1,51 @@
 {{ 
   config(
     materialized = 'view',
-    database     = env_var('DBT_ENVIRONMENTS') ~ '_SILVER_DB',
-    schema       = 'SQL_SERVER_DBO',
-    tags         = ['staging']
   ) 
 }}
 
+-- Obtenemos los datos base del modelo base (renombrado y tipado mínimo)
 with base as (
-  select * from {{ ref('base_sql_server_dbo__order_items') }}
+  select * 
+  from {{ ref('base_sql_server_dbo__order_items') }}
 ),
 
-cleaned as (
+-- Traemos el precio del producto desde el staging de productos para enriquecer
+products as (
+  select 
+    product_id, 
+    price
+  from {{ ref('stg_sql_server_dbo__products') }}
+),
+
+-- Combinamos los ítems del pedido con los productos para incorporar el precio
+joined as (
   select
-    -- surrogate key sobre order_id + product_id
-    {{ dbt_utils.generate_surrogate_key(['order_id_nk', 'product_id_nk']) }} as order_item_sk,
-    order_id_nk,
-    product_id_nk,
-    coalesce(quantity_raw, 0) as quantity,
-    -- synced timestamp a UTC
-    convert_timezone('UTC', synced_at_raw)::timestamp_tz as synced_at_utc,
+    b.order_id,
+    b.product_id,
+    coalesce(b.quantity, 0) as quantity,  -- aseguramos que no haya NULLs
+    p.price,                             -- precio actual del producto (no historificado)
+    b.synced_at,
+    b._fivetran_deleted
+  from base b
+  left join products p
+    on b.product_id = p.product_id
+),
+
+-- Generamos surrogate key y normalizamos campos
+final as (
+  select
+    -- surrogate key compuesta: cada combinación order_id + product_id es única
+    {{ dbt_utils.generate_surrogate_key(['order_id', 'product_id']) }} as order_item_sk,
+    order_id,
+    product_id,
+    quantity,
+    price,
+    convert_timezone('UTC', synced_at)::timestamp_tz as synced_at_utc,
     _fivetran_deleted
-  from base
-  where coalesce(_fivetran_deleted, false) = false
+  from joined
+  where coalesce(_fivetran_deleted, false) = false  -- filtramos registros eliminados
 )
 
-select * from cleaned
+-- Resultado final limpio para usar en capa de mart
+select * from final

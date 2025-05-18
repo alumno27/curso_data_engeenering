@@ -1,10 +1,11 @@
 {{ config(materialized="view") }}
 
 with spine as (
-    {{ dbt_utils.date_spine(
+    select date_day
+    from {{ dbt_utils.date_spine(
         datepart="day",
         start_date="cast('2020-01-01' as date)",
-        end_date="cast(dateadd(yy,2,current_date() ) as date)"
+        end_date="cast(dateadd(yy,2,current_date()) as date)"
     ) }}
 )
 
@@ -24,5 +25,4 @@ select
     date_trunc('year', date_day) as year_start,
     case when extract(dow from date_day) in (0, 6) then true else false end as is_weekend
 from spine
-
 order by date_day desc
