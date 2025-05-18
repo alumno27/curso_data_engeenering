@@ -3,16 +3,15 @@
     tags = ['dimension']
 ) }}
 
--- 🗓 Generación de fechas con date_spine
-with calendar as (
-    select 
-        date_day
-    from {{ dbt_utils.date_spine(
-    datepart="day",
-    start_date="cast('2021-01-01' as date)",
-    end_date="cast('2026-01-01' as date)"
-   )
-}}
+-- 🗓 Generación de fechas entre 2021 y 2026 usando date_spine
+with spine as (
+
+    {{ dbt_utils.date_spine(
+        datepart="day",
+        start_date="'2021-01-01'",
+        end_date="'2026-12-31'"
+    ) }}
+
 ),
 
 -- 📅 Enriquecimiento con atributos temporales
@@ -27,7 +26,7 @@ enriched as (
         to_char(date_day, 'Day') as day_name,
         to_char(date_day, 'Month') as month_name,
         case when extract(dow from date_day) in (0,6) then true else false end as is_weekend
-    from calendar
+    from spine
 )
 
 select * from enriched
