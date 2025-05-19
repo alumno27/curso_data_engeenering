@@ -4,9 +4,9 @@
 ) }}
 
 select
-  order_id       as order_id,
-  product_id     as product_id,
-  quantity       as quantity,
+  order_id ,    
+  product_id ,    
+  quantity   ,    
   _fivetran_deleted,
-  _fivetran_synced as synced_at
+  _fivetran_synced 
 from {{ source('sql_server_dbo','order_items') }}

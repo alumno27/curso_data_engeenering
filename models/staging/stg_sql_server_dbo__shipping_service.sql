@@ -1,8 +1,7 @@
 {{ 
   config(
     materialized = 'view',
-    database     = env_var('DBT_ENVIRONMENTS') ~ '_SILVER_DB',
-    schema       = 'SQL_SERVER_DBO',
+    
     tags         = ['staging']
   ) 
 }}
@@ -14,9 +13,9 @@ with base as (
 cleaned as (
   select
     -- surrogate key por servicio de envío
-    {{ dbt_utils.generate_surrogate_key(['shipping_service_raw']) }} as shipping_service_sk,
+    {{ dbt_utils.generate_surrogate_key(['shipping_service']) }} as shipping_service_id,
     -- normalizamos a minúsculas y tratamos nulos
-    lower(coalesce(shipping_service_raw, 'desconocido')) as shipping_service,
+    lower(coalesce(shipping_service, 'desconocido')) as shipping_service,
     -- flag de borrado
     _fivetran_deleted
   from base
@@ -24,6 +23,6 @@ cleaned as (
 )
 
 select distinct 
-  shipping_service_sk,
+  shipping_service_id,
   shipping_service
 from cleaned
