@@ -1,8 +1,10 @@
 {{ config(
-    materialized = 'table'
+    materialized = 'incremental',
+    unique_key = 'event_sk'
 ) }}
 
 with events as (
+
     select
         event_id,
         page_url,
@@ -14,9 +16,16 @@ with events as (
         created_at,
         _fivetran_synced as synced_at_utc
     from {{ ref('stg_sql_server_dbo__events') }}
-    where _fivetran_deleted = false
-      and user_id != 'unknown'
-),  -- ← ESTA COMA ES CRUCIAL
+    
+    {% if is_incremental() %}
+    -- Solo trae nuevos registros al hacer incremental
+    where _fivetran_synced > (select max(synced_at_utc) from {{ this }})
+    {% endif %}
+
+    and _fivetran_deleted = false
+    and user_id != 'unknown'
+
+),
 
 users as (
     select user_id from {{ ref('dim_users') }}
@@ -32,7 +41,7 @@ orders as (
 
 joined as (
     select
-        md5(cast(coalesce(cast(e.event_id as TEXT), '_dbt_utils_surrogate_key_null_') as TEXT)) as event_sk,
+        md5(coalesce(cast(e.event_id as text), '_dbt_utils_surrogate_key_null_')) as event_sk,
         e.event_id,
         e.page_url,
         e.event_type,
@@ -42,12 +51,9 @@ joined as (
         e.order_id,
         e.created_at,
         e.synced_at_utc,
-
-        -- Relaciones (FKs)
-        u.user_id       as user_id_fk,
-        p.product_id    as product_id_fk,
-        o.order_id      as order_id_fk
-
+        u.user_id as user_id_fk,
+        p.product_id as product_id_fk,
+        o.order_id as order_id_fk
     from events e
     left join users u     on e.user_id = u.user_id
     left join products p  on e.product_id = p.product_id
