@@ -17,7 +17,7 @@ products as (
     name,
     price,
     inventory
-  from {{ ref('stg_sql_server_dbo__products') }}
+  from {{ ref('base_sql_server_dbo__products') }}
 ),
 
 joined as (

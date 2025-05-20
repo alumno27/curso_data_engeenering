@@ -6,7 +6,7 @@ with base as (
         delivered_at,
         created_at,
         _fivetran_deleted
-    from {{ ref('stg_sql_server_dbo__orders') }}
+    from {{ ref('base_sql_server_dbo__orders') }}
     where coalesce(_fivetran_deleted, false) = false
 ),
 
