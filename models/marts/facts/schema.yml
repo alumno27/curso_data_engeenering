@@ -1,0 +1,153 @@
+version: 2
+
+models:
+  - name: fct_order_items
+    description: Tabla de hechos que representa los ítems de cada pedido.
+    columns:
+      - name: order_item_sk
+        description: Clave surrogate única para el ítem del pedido.
+        tests:
+          - unique
+          - not_null
+
+      - name: order_id
+        description: ID del pedido relacionado.
+        tests:
+          - not_null
+
+      - name: product_id
+        description: ID del producto relacionado.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+
+      - name: quantity
+        description: Cantidad del producto.
+        tests:
+          - not_null
+
+      - name: price
+        description: Precio unitario del producto.
+        tests:
+          - not_null
+
+      - name: synced_at_utc
+        description: Momento de sincronización de los datos.
+        tests:
+          - not_null
+
+
+
+  - name: fct_orders
+    description: Tabla de hechos que representa los pedidos realizados.
+    columns:
+      - name: order_id
+        description: ID único del pedido.
+        tests:
+          - not_null
+          - unique
+
+      - name: user_id
+        description: ID del usuario que realizó el pedido.
+        tests:
+          - not_null
+
+      - name: promo_id
+        description: ID de la promoción aplicada al pedido (puede estar vacía).
+
+      - name: address_id
+        description: ID de la dirección de envío.
+        tests:
+          - not_null
+
+      - name: created_at
+        description: Fecha de creación del pedido.
+        tests:
+          - not_null
+
+      - name: delivered_at
+        description: Fecha de entrega (puede ser nula si no ha sido entregado).
+
+      - name: order_cost
+        description: Costo total de productos.
+        tests:
+          - not_null
+
+      - name: shipping_cost
+        description: Costo del envío.
+        tests:
+          - not_null
+
+      - name: order_total
+        description: Total del pedido (productos + envío).
+        tests:
+          - not_null
+
+      - name: synced_at_utc
+        description: Fecha de sincronización de Fivetran.
+        tests:
+          - not_null
+
+      - name: order_status_sk
+        description: Clave surrogate del estado del pedido.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_order_status')
+              field: order_status_sk
+
+
+
+
+
+
+  
+
+
+  - name: fct_events
+    description: Tabla de hechos que representa los eventos del sistema (clics, vistas, compras, etc.).
+    columns:
+      - name: event_sk
+        description: Clave surrogate única del evento.
+        tests:
+          - unique
+          - not_null
+
+      - name: event_id
+        description: ID natural del evento.
+        tests:
+          - not_null
+
+      - name: user_id
+        description: ID del usuario asociado al evento.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_users')
+              field: user_id
+
+      - name: product_id
+        description: ID del producto relacionado.
+        tests:
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+
+      - name: order_id
+        description: ID del pedido relacionado (si aplica).
+        tests:
+          - relationships:
+              to: ref('fct_orders')
+              field: order_id
+
+      - name: created_at
+        description: Fecha de creación del evento.
+        tests:
+          - not_null
+
+      - name: synced_at_utc
+        description: Timestamp de sincronización.
+        tests:
+          - not_null

@@ -1,10 +1,7 @@
-{{ config(
-    materialized = 'table',
-   
-) }}
+{{ config(materialized = 'table') }}
 
 select
-    {{ dbt_utils.generate_surrogate_key(['product_id']) }} as product_sk,
+    md5(cast(coalesce(cast(product_id as TEXT), '_dbt_utils_surrogate_key_null_') as TEXT)) as product_sk,
     product_id,
     name,
     price,

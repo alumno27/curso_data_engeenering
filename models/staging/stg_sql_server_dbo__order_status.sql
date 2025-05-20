@@ -1,30 +1,32 @@
-{{ 
-  config(
-    materialized = 'view',
-    
-    tags         = ['staging']
-  ) 
-}}
+{{ config(materialized = 'view') }}
 
 with base as (
-  select * from {{ ref('base_sql_server_dbo__orders') }}
+    select 
+        order_id,
+        delivered_at,
+        created_at,
+        _fivetran_deleted
+    from {{ ref('stg_sql_server_dbo__orders') }}
+    where coalesce(_fivetran_deleted, false) = false
 ),
 
-raw as (
-  select
-    order_status      as order_status,
-    _fivetran_deleted
-  from base
+with_status as (
+    select 
+        order_id,
+        case
+            when delivered_at is not null then 'delivered'
+            when created_at is not null then 'processing'
+            else 'unknown'
+        end as order_status
+    from base
 ),
 
-cleaned as (
-  select
-    {{ dbt_utils.generate_surrogate_key(['order_status']) }} as order_status,
-    lower(order_status)                                  as order_status,
-    _fivetran_deleted
-  from raw
-  where coalesce(_fivetran_deleted, false) = false
-  group by order_status, _fivetran_deleted
+final as (
+    select 
+        md5(order_status) as order_status_sk,
+        lower(order_status) as order_status
+    from with_status
+    group by order_status
 )
 
-select * from cleaned
+select * from final
