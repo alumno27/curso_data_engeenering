@@ -5,7 +5,7 @@
 ) }}
 
 select
-    {{ dbt_utils.generate_surrogate_key(['user_id']) }} as user_id_sk,
+    
     user_id,
     lower(first_name)    as first_name,
     lower(last_name)     as last_name,

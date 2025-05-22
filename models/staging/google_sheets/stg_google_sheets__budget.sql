@@ -1,23 +1,22 @@
 {{ config(
-    materialized = 'view',
-    
+    materialized = 'view'
 ) }}
 
-with cleaned as (
+with base as (
+    select *
+    from {{ ref('base_google_sheets__budget_') }}
+),
 
+cleaned as (
     select
-        "PRODUCT_ID"         as product_id_nk,
-        "MONTH"              as month,
-        "QUANTITY"::int      as quantity,
-        "_FIVETRAN_SYNCED"   as synced_at_raw
-    from {{ source('google_sheets', 'budget') }}
-
+        {{ dbt_utils.generate_surrogate_key(['product_id', 'month']) }} as budget_id,
+        budget,
+        product_id,
+        month,
+        quantity,
+        convert_timezone('UTC', synced_at)::timestamp_tz as synced_at
+        
+    from base
 )
 
-select
-    {{ dbt_utils.generate_surrogate_key(['product_id_nk', 'month']) }} as budget_sk,
-    product_id_nk as product_id,
-    month,
-    quantity,
-    convert_timezone('UTC', synced_at_raw)::timestamp_tz as synced_at_utc
-from cleaned
+select * from cleaned

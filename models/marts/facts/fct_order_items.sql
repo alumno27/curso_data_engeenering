@@ -1,35 +1,36 @@
 {{ config(
-    materialized = 'table'
+    materialized = 'incremental',
+    unique_key = ['order_id', 'product_id']
 ) }}
 
-with order_items as (
+with max_synced as (
+    select coalesce(max(synced_at), '1900-01-01'::timestamp) as max_synced_at
+    from {{ this }}
+),
+
+filtered_items as (
     select
         order_id,
         product_id,
         quantity,
-        synced_at_utc
+        price,
+        synced_at
     from {{ ref('stg_sql_server_dbo__orders_items') }}
+    {% if is_incremental() %}
+      where synced_at > (select max_synced_at from max_synced)
+    {% endif %}
 ),
 
-product_details as (
+final as (
     select
+        order_id,
         product_id,
-        price
-    from {{ ref('dim_products') }}
-),
-
-joined as (
-    select
-        {{ dbt_utils.generate_surrogate_key(['oi.order_id', 'oi.product_id']) }} as order_item_sk,
-        oi.order_id,
-        oi.product_id,
-        dp.price,
-        oi.quantity,
-        oi.quantity * dp.price as order_item_total,
-        oi.synced_at_utc
-    from order_items oi
-    left join product_details dp
-        on oi.product_id = dp.product_id
+        quantity,
+        price,
+        quantity * price as order_item_total,
+        synced_at,
+        CAST(DATE_TRUNC('day', synced_at) AS DATE) AS synced_at_date
+    from filtered_items
 )
 
-select * from joined
+select * from final

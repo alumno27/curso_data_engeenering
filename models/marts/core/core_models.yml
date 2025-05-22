@@ -1,3 +1,5 @@
+version: 2
+
 models:
   - name: dim_city
     description: "Dimensión de códigos postales enriquecida con ciudad, población y densidad"
@@ -38,3 +40,84 @@ models:
         description: "Nombre del mes"
       - name: is_weekend
         description: "Marca si es fin de semana"
+
+  - name: dim_users
+    description: "Dimensión de usuarios, con información de contacto y atributos personales."
+    columns:
+      - name: user_id
+        description: "Identificador único del usuario."
+        tests:
+          - not_null
+          - unique
+      - name: email
+        description: "Correo electrónico del usuario."
+        tests:
+          - not_null
+      - name: birthdate
+        description: "Fecha de nacimiento del usuario."
+        tests:
+          - not_null
+      - name: sex
+        description: "Sexo declarado del usuario."
+        tests:
+          - accepted_values:
+              values: ['M', 'F', 'O']
+              config:
+                severity: warn
+
+  - name: dim_products
+    description: >
+      Dimensión de productos con información enriquecida, incluyendo categoría,
+      etiquetas, proveedor y rating promedio del producto.
+    columns:
+      - name: product_id
+        description: ID único del producto.
+        tests:
+          - not_null
+          - unique
+
+      - name: name
+        description: Nombre del producto.
+        tests:
+          - not_null
+
+      - name: price
+        description: Precio del producto.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+
+      - name: inventory
+        description: Inventario disponible del producto.
+        tests:
+          - not_null
+
+      - name: synced_at
+        description: Timestamp de sincronización del producto.
+        tests:
+          - not_null
+
+      - name: category
+        description: Categoría del producto.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: ['Indoor', 'Air Purifying', 'Succulent', 'Flowering', 'Decorative']
+
+      - name: tags
+        description: Etiquetas asociadas al producto.
+        tests:
+          - not_null
+
+      - name: supplier_id
+        description: Identificador del proveedor del producto.
+        tests:
+          - not_null
+
+      - name: average_rating
+        description: Rating promedio del producto en una escala de 0 a 5.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 5

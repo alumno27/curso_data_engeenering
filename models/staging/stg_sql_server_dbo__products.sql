@@ -11,11 +11,11 @@ with base as (
 
 cleaned as (
   select
-    product_id_nk     as product_id,
-    name_raw          as name,
-    price_raw         as price,
-    inventory_raw     as inventory,
-    synced_at_raw     as synced_at_utc,
+    product_id    as product_id,
+    name          as name,
+    price        as price,
+    inventory     as inventory,
+    synced_at    as synced_at,
     _fivetran_deleted
   from base
   where coalesce(_fivetran_deleted, false) = false

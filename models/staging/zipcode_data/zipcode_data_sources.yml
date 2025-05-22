@@ -21,5 +21,15 @@ sources:
           - name: density
             description: Densidad poblacional
 
-
+      - name: users_data
+        description: Tabla con información demográfica adicional de los usuarios.
+        columns:
+          - name: USER_ID
+            description: ID único del usuario.
+            tests:
+              - not_null
+          - name: SEX
+            description: Sexo declarado 
+          - name: BIRTHDATE
+            description: Fecha de nacimiento del usuario en formato string. Será convertida a tipo fecha en el modelo staging.
 

@@ -4,8 +4,8 @@
 ) }}
 
 select
-    address_id_sk             as address_sk,
-    address_id_nk             as address_id,
+    
+    address_id,
     address,
     state,
     country,

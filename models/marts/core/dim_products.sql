@@ -1,10 +1,37 @@
 {{ config(materialized = 'table') }}
 
-select
-    md5(cast(coalesce(cast(product_id as TEXT), '_dbt_utils_surrogate_key_null_') as TEXT)) as product_sk,
-    product_id,
-    name,
-    price,
-    inventory,
-    synced_at_utc
-from {{ ref('stg_sql_server_dbo__products') }}
+with base_products as (
+    select * from {{ ref('stg_sql_server_dbo__products') }}
+),
+
+enriched as (
+    select * from {{ ref('stg_products_enriched') }}
+),
+
+final as (
+    select
+        p.product_id,
+        p.name,
+        p.price,
+        p.inventory,
+        p.synced_at,
+        e.category,
+        e.tags,
+        e.supplier_id,
+        e.average_rating
+    from base_products p
+    left join enriched e on p.product_id = e.product_id
+)
+
+select * from final
+
+
+
+
+
+
+
+
+
+
+

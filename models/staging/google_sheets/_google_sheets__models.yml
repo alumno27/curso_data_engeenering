@@ -4,27 +4,22 @@ models:
   - name: stg_google_sheets__budget
     description: "Staging de objetivos de ventas mensuales importados desde Google Sheets"
     columns:
-      - name: row_sk
-        description: "Surrogate key generada para cada fila del sheet"
-        tests:
-          - not_null
-          - unique
-      - name: row_nk
-        description: "Clave natural (identificador de fila en el sheet)"
-        tests:
-          - not_null
-      - name: product_id_nk
+      
+
+      - name: product_id
         description: "ID del producto al que se asigna el objetivo"
         tests:
           - not_null
+
       - name: month
         description: "Mes del objetivo, truncado al primer día de mes"
         tests:
           - not_null
-      - name: quantity_goal
+
+      - name: quantity
         description: "Cantidad objetivo de unidades a vender"
-      - name: synced_at_utc
+
+      - name: synced_at
         description: "Fecha de sincronización en UTC"
         tests:
           - not_null
-

@@ -2,8 +2,9 @@
     materialized = 'view',
     tags         = ['base']
 ) }}
-
+with cte as (
 select
+
   order_id               as order_id,
   user_id                as user_id,
   case when promo_id='' 
@@ -23,3 +24,23 @@ select
   _fivetran_synced       as synced_at
 
 from {{ source('sql_server_dbo','orders') }}
+)
+
+select 
+order_id,
+user_id,
+{{ dbt_utils.generate_surrogate_key(["promo_id"]) }} as promo_id,
+address_id,
+shipping_service,
+shipping_cost,
+order_cost,
+order_total,
+tracking_id,
+order_status,
+created_at,
+delivered_at,
+_fivetran_deleted,
+synced_at
+
+from cte 
+

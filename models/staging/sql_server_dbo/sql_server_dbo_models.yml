@@ -9,7 +9,7 @@ models:
   - name: base_sql_server_dbo__events
     description: "Modelo base que filtra eventos inválidos y asegura tipos consistentes"
     columns:
-      - name: event_id_nk
+      - name: event_id
         description: "ID natural del evento"
         tests:
           - not_null
@@ -55,115 +55,115 @@ models:
   - name: base_sql_server_dbo__orders
     description: "Modelo base que tipa y renombra columnas de orders"
     columns:
-      - name: order_id_nk
+      - name: order_id
         description: "ID natural del pedido"
         tests:
           - not_null
           - unique
-      - name: user_id_nk
+      - name: user_id
         description: "ID natural del usuario"
-      - name: promo_id_nk
+      - name: promo_id
         description: "ID natural de la promoción aplicada"
-      - name: address_id_nk
+      - name: address_id
         description: "ID natural de la dirección asociada"
-      - name: shipping_service_raw
+      - name: shipping_service
         description: "Servicio de envío crudo"
-      - name: shipping_cost_raw
+      - name: shipping_cost
         description: "Costo de envío crudo"
-      - name: order_cost_raw
+      - name: order_cost
         description: "Subtotal de pedido crudo"
-      - name: order_total_raw
+      - name: order_total
         description: "Total de pedido crudo"
       - name: tracking_id
         description: "Código de seguimiento crudo"
-      - name: order_status_raw
+      - name: order_status
         description: "Estado crudo del pedido"
-      - name: created_at_raw
+      - name: created_at
         description: "Fecha cruda de creación"
-      - name: estimated_delivery_raw
+      - name: estimated_delivery
         description: "Fecha estimada cruda"
-      - name: delivered_at_raw
+      - name: delivered_at
         description: "Fecha de entrega cruda"
       - name: _fivetran_deleted
         description: "Flag lógico de borrado"
-      - name: synced_at_raw
+      - name: synced_at
         description: "Fecha de sincronización cruda"
 
   - name: base_sql_server_dbo__order_items
     description: "Modelo base que tipa y renombra columnas de order_items"
     columns:
-      - name: order_id_nk
+      - name: order_id
         description: "ID natural del pedido"
-      - name: product_id_nk
+      - name: product_id
         description: "ID natural del producto"
-      - name: quantity_raw
+      - name: quantity
         description: "Cantidad cruda solicitada"
       - name: _fivetran_deleted
         description: "Flag lógico de borrado"
-      - name: synced_at_raw
+      - name: synced_at
         description: "Fecha de sincronización cruda"
 
   - name: base_sql_server_dbo__products
     description: "Modelo base que tipa y renombra columnas de products"
     columns:
-      - name: product_id_nk
+      - name: product_id
         description: "ID natural del producto"
         tests:
           - not_null
           - unique
-      - name: name_raw
+      - name: name
         description: "Nombre crudo del producto"
-      - name: price_raw
+      - name: price
         description: "Precio unitario crudo"
-      - name: inventory_raw
+      - name: inventory
         description: "Stock disponible crudo"
       - name: _fivetran_deleted
         description: "Flag lógico de borrado"
-      - name: synced_at_raw
+      - name: synced_at
         description: "Fecha de sincronización cruda"
 
   - name: base_sql_server_dbo__addresses
     description: "Modelo base que tipa y renombra columnas de addresses"
     columns:
-      - name: address_id_nk
+      - name: address_id
         description: "ID natural de la dirección"
         tests:
           - not_null
           - unique
-      - name: address_raw
+      - name: address
         description: "Dirección cruda"
-      - name: state_raw
+      - name: state
         description: "Estado crudo"
-      - name: country_raw
+      - name: country
         description: "País crudo"
-      - name: zipcode_raw
+      - name: zipcode
         description: "Código postal crudo"
       - name: _fivetran_deleted
         description: "Flag lógico de borrado"
-      - name: synced_at_raw
+      - name: synced_at
         description: "Fecha de sincronización cruda"
 
   - name: base_sql_server_dbo__users
     description: "Modelo base que tipa y renombra columnas de users"
     columns:
-      - name: user_id_nk
+      - name: user_id
         description: "ID natural del usuario"
         tests:
           - not_null
           - unique
-      - name: first_name_raw
+      - name: first_name
         description: "Nombre crudo"
-      - name: last_name_raw
+      - name: last_name
         description: "Apellido crudo"
-      - name: email_raw
+      - name: email
         description: "Correo crudo"
-      - name: phone_number_raw
+      - name: phone_number
         description: "Teléfono crudo"
-      - name: total_orders_raw
+      - name: total_orders
         description: "Total de pedidos crudo"
       - name: _fivetran_deleted
         description: "Flag lógico de borrado"
-      - name: synced_at_raw
+      - name: synced_at
         description: "Fecha de sincronización cruda"
 
   # ─────────────────────────────────────────────────────────────

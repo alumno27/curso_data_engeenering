@@ -4,10 +4,10 @@
 ) }}
 
 select
-  "PRODUCT_ID"       as product_id_nk,
-  "NAME"             as name_raw,
-  "PRICE"            as price_raw,
-  "INVENTORY"        as inventory_raw,
+  "PRODUCT_ID"       as product_id,
+  "NAME"             as name,
+  "PRICE"            as price,
+  "INVENTORY"        as inventory,
   "_FIVETRAN_DELETED" as _fivetran_deleted,
-  "_FIVETRAN_SYNCED"  as synced_at_raw
+  "_FIVETRAN_SYNCED"  as synced_at
 from {{ source('sql_server_dbo','products') }}

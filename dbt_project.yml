@@ -21,17 +21,24 @@ models:
         +schema: google_sheets
       sql_server_dbo:
         +schema: sql_server_dbo
-      data:
-        +schema: data
+
     marts:
       +materialized: table
       +database: "{{ env_var('DBT_ENVIRONMENTS') }}_GOLD_DB"
+
       core:
-        +schema: core
+        +schema: core  # ✅ solo para dim_*
+
+      
+        
 seeds:
   +schema: seed_data
-  +database: "{{ env_var('DBT_ENVIRONMENTS') }}_BRONZE_DB"        
+  +database: "{{ env_var('DBT_ENVIRONMENTS') }}_BRONZE_DB"
+
 snapshots:
   +transient: false
   +target_database: "{{ env_var('DBT_ENVIRONMENTS') }}_SILVER_DB"
   +target_schema: snapshots
+
+vars:
+  surrogate_key_treat_nulls_as_empty_strings: True

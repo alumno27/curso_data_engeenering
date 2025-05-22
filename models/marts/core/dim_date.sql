@@ -3,30 +3,24 @@
     tags = ['dimension']
 ) }}
 
--- 🗓 Generación de fechas entre 2021 y 2026 usando date_spine
-with spine as (
-
-    {{ dbt_utils.date_spine(
-        datepart="day",
-        start_date="'2021-01-01'",
-        end_date="'2026-12-31'"
-    ) }}
-
+-- 📆 Generar fechas entre 2000 y 2050 (~55 años)
+WITH date_spine AS (
+    SELECT DATEADD(DAY, SEQ4(), '2000-01-01') AS date
+    FROM TABLE(GENERATOR(ROWCOUNT => 20000))
 ),
 
--- 📅 Enriquecimiento con atributos temporales
-enriched as (
-    select
-        date_day as date,
-        extract(year from date_day) as year,
-        extract(month from date_day) as month,
-        extract(day from date_day) as day,
-        extract(quarter from date_day) as quarter,
-        extract(week from date_day) as week,
-        to_char(date_day, 'Day') as day_name,
-        to_char(date_day, 'Month') as month_name,
-        case when extract(dow from date_day) in (0,6) then true else false end as is_weekend
-    from spine
+enriched AS (
+    SELECT
+        date,
+        EXTRACT(YEAR FROM date) AS year,
+        EXTRACT(MONTH FROM date) AS month,
+        EXTRACT(DAY FROM date) AS day,
+        EXTRACT(QUARTER FROM date) AS quarter,
+        EXTRACT(WEEK FROM date) AS week,
+        TO_CHAR(date, 'Day') AS day_name,
+        TO_CHAR(date, 'Month') AS month_name,
+        CASE WHEN EXTRACT(DOW FROM date) IN (0,6) THEN TRUE ELSE FALSE END AS is_weekend
+    FROM date_spine
 )
 
-select * from enriched
+SELECT * FROM enriched

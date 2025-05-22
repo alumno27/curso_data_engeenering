@@ -28,7 +28,9 @@ joined as (
     p.price,
     p.inventory,
     b.quantity,
-    convert_timezone('UTC', b._fivetran_synced)::timestamp_tz as synced_at_utc
+    convert_timezone('UTC', b._fivetran_synced)::timestamp_tz as synced_at,
+    {{ dbt_utils.generate_surrogate_key(['b.order_id', 'b.product_id']) }} as order_item_id
+
   from base b
   left join products p
     on b.product_id = p.product_id

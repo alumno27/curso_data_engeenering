@@ -1,19 +1,15 @@
 version: 2
 
 models:
-
   - name: fct_order_items
     description: >
       Tabla de hechos que representa los ítems de cada pedido. 
       Incluye información del producto, cantidad y sincronización.
     columns:
-      - name: order_item_sk
-        description: Clave surrogate única para el ítem del pedido.
-        tests: [unique, not_null]
-
       - name: order_id
         description: ID del pedido relacionado.
-        tests: [not_null]
+        tests:
+          - not_null
 
       - name: product_id
         description: ID del producto relacionado.
@@ -31,14 +27,21 @@ models:
         description: Precio unitario del producto.
         tests: [not_null]
 
-      - name: synced_at_utc
+      - name: synced_at
         description: Momento de sincronización de los datos.
-        tests: [not_null]
+        tests:
+          - not_null
+          - relationships_to_dim_date  # ✅ test a dim_date
+
+    tests:
+      - unique_combination_of_columns:
+          combination_of_columns:
+            - order_id
+            - product_id
 
   - name: fct_orders
     description: >
-      Tabla de hechos que representa los pedidos realizados, con costos, fechas, 
-      direcciones y estado del pedido.
+      Tabla de hechos que representa los pedidos realizados.
     columns:
       - name: order_id
         description: ID único del pedido.
@@ -55,12 +58,16 @@ models:
         description: ID de la dirección de envío.
         tests: [not_null]
 
-      - name: created_at
-        description: Fecha de creación del pedido.
-        tests: [not_null]
+      - name: CREATED_AT
+        description: Fecha truncada a día de creación del pedido.
+        tests:
+          - not_null
+          - relationships_to_dim_date  # ✅ test a dim_date
 
       - name: delivered_at
-        description: Fecha de entrega (puede ser nula si no ha sido entregado).
+        description: Fecha truncada a día de entrega (puede ser nula si no ha sido entregado).
+        tests:
+          - relationships_to_dim_date  # ✅ test a dim_date
 
       - name: order_cost
         description: Costo total de productos.
@@ -75,8 +82,17 @@ models:
         tests: [not_null]
 
       - name: synced_at_utc
-        description: Fecha de sincronización de Fivetran.
-        tests: [not_null]
+        description: Fecha original con timestamp de sincronización de Fivetran.
+        tests:
+          - not_null
+
+      - name: synced_at_date
+        description: Fecha truncada a día de sincronización de Fivetran.
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date
 
       - name: order_status_sk
         description: Clave surrogate del estado del pedido.
@@ -86,68 +102,3 @@ models:
               to: ref('dim_order_status')
               field: order_status_sk
 
-  - name: fct_events
-    description: >
-      Tabla de hechos que registra eventos del comportamiento del usuario, 
-      como clics, vistas de producto, etc. Este modelo es incremental 
-      (materialized: incremental) y usa `event_sk` como clave surrogate única.
-      Se relaciona con dim_users, dim_products y fct_orders.
-    columns:
-      - name: event_sk
-        description: Clave surrogate única del evento.
-        tests: [unique, not_null]
-
-      - name: user_id
-        description: ID del usuario que generó el evento.
-        tests:
-          - not_null
-          - relationships:
-              to: ref('dim_users')
-              field: user_id
-
-      - name: product_id
-        description: ID del producto visto o clicado.
-        tests:
-          - relationships:
-              to: ref('dim_products')
-              field: product_id
-
-      - name: order_id
-        description: Pedido asociado si el evento está relacionado con una compra.
-        tests:
-          - relationships:
-              to: ref('fct_orders')
-              field: order_id
-
-      - name: created_at
-        description: Fecha y hora en que ocurrió el evento.
-        tests: [not_null]
-
-      - name: synced_at_utc
-        description: Timestamp de sincronización en UTC.
-        tests: [not_null]
-
-  - name: fct_budget
-    description: >
-      Tabla de hechos con presupuestos mensuales por producto, para análisis de comparación
-      contra ventas reales.
-    columns:
-      - name: budget_sk
-        description: Clave surrogate única para cada presupuesto mensual de producto.
-        tests: [unique, not_null]
-
-      - name: product_id
-        description: ID del producto presupuestado.
-        tests:
-          - not_null
-          - relationships:
-              to: ref('dim_products')
-              field: product_id
-
-      - name: month
-        description: Mes del presupuesto.
-        tests: [not_null]
-
-      - name: quantity
-        description: Cantidad presupuestada.
-        tests: [not_null]

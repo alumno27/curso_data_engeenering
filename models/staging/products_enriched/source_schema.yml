@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: products_enriched
+    database: ALUMNO27_DEV_BRONZE_DB
+    schema: PRODUCTS_ENRICHED
+    tables:
+      - name: PRODUCTS_ANALYTICS
+        description: "Tabla de atributos enriquecidos de productos"
+        columns:
+          - name: PRODUCT_ID
+            tests: [not_null, unique]
+          - name: CATEGORY
+          - name: AVERAGE_RATING
